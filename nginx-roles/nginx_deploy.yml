@@ -1,0 +1,7 @@
+- hosts: all
+  become: yes
+  roles:
+    - role: deploy_nginx
+      vars:
+        nginx_port: 8080
+        index_message: "Hello form Ansible NGINX"
