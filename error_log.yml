@@ -1,0 +1,30 @@
+- name: Error handling with block
+  hosts: all
+  become: yes
+
+  tasks:
+    - block:
+        - name: Install nginx
+          yum:
+            name: nginx
+            state: present
+
+        - name: Start nginx
+          service:
+            name: nginx
+            state: started
+            enabled: yes
+
+      rescue:
+        - name: NGINX failed – collect logs
+          shell: journalctl -xe
+          register: nginx_logs
+
+        - name: Show logs
+          debug:
+            var: nginx_logs.stdout
+
+      always:
+        - name: Always run cleanup message
+          debug:
+            msg: "NGINX task attempt finished"

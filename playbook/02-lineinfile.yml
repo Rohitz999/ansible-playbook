@@ -1,0 +1,30 @@
+---
+- name: Add environment variable
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: add env in application
+      lineinfile:
+        path: /opt/app.conf
+        line: "ENV=production"
+        create: yes
+
+    - name: add port line after env
+      lineinfile:
+        path: /opt/app.conf
+        insertafter: '^ENV'
+        line: "PORT=3000"
+
+    - name: add baseurl line before env
+      lineinfile:
+        path: /opt/app.conf
+        insertbefore: ^ENV
+        line: "base_url=example.com"
+
+    - name: update env in application
+      lineinfile:
+        path: /opt/app.conf
+        regexp: '^ENV'
+        line: "ENV=production-v5"
+      

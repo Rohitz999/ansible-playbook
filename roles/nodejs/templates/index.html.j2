@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sadhix Students</title>
+  <meta charset="utf-8">
+
+  <style>
+    body {
+      font-family: Arial;
+      margin: 40px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    input {
+      padding: 6px;
+      margin: 4px;
+    }
+    button {
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Student Management Dashbord for Sadhix </h1>
+
+<h3>Add Student</h3>
+<input id="name" placeholder="Name">
+<input id="email" placeholder="Email">
+<input id="course" placeholder="Course">
+<button onclick="addStudent()">Add</button>
+
+<h3>Students</h3>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Course</th>
+    </tr>
+  </thead>
+  <tbody id="students"></tbody>
+</table>
+
+<script>
+async function loadStudents() {
+  const res = await fetch('/api/students');
+  const data = await res.json();
+
+  const tbody = document.getElementById('students');
+  tbody.innerHTML = '';
+
+  data.forEach(s => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.email}</td>
+        <td>${s.course}</td>
+      </tr>
+    `;
+  });
+}
+
+async function addStudent() {
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const course = document.getElementById('course').value;
+
+  await fetch('/api/student', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, course })
+  });
+
+  loadStudents();
+}
+
+loadStudents();
+</script>
+
+</body>
+</html>
+

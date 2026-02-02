@@ -1,0 +1,14 @@
+- name: create app directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0777
+- name: Deploy app config
+  template:
+    src: app_config.j2
+    dest: "{{ app_dir }}config.js"
+    owner: root
+    group: root
+    mode: '0644'

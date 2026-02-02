@@ -1,0 +1,4 @@
+- name: This is workstation playbook
+  yum:
+    name: git
+    state: absent

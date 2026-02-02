@@ -1,0 +1,19 @@
+---
+- name: Setup Web Servers
+  hosts: web
+  become: yes
+  roles:
+    - web_server
+
+- name: Setup DB Servers
+  hosts: db
+  become: yes
+  roles:
+    - db_server
+
+- name: Setup Workstations
+  hosts: workstation
+  become: yes
+  roles:
+    - workstation
+

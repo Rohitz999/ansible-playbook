@@ -1,0 +1,74 @@
+const express = require('express');
+const mysql = require('mysql2');
+const cors = require('cors');
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// ================================
+// MariaDB connection (root only)
+// ================================
+const db = mysql.createConnection({
+  user: 'root',                        // root user
+  socketPath: '/var/lib/mysql/mysql.sock', // use unix socket for root
+  database: 'sadhixdb'                 // database created via Ansible
+});
+
+db.connect(err => {
+  if (err) {
+    console.error("MariaDB Connection Failed:", err);
+    process.exit(1); // stop Node if DB fails
+  }
+  console.log("MariaDB Connected");
+});
+
+// ================================
+// Create table if not exists
+// ================================
+db.query(`
+CREATE TABLE IF NOT EXISTS students (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100),
+  course VARCHAR(100)
+)`);
+
+// ================================
+// API Endpoints
+// ================================
+
+// Initialize DB
+app.get('/init', (req, res) => {
+  res.send("Database Initialized");
+});
+
+// Add student
+app.post('/student', (req, res) => {
+  const { name, email, course } = req.body;
+  db.query(
+    "INSERT INTO students VALUES (NULL, ?, ?, ?)",
+    [name, email, course],
+    (err) => {
+      if (err) return res.status(500).send("Error adding student");
+      res.send("Student Added");
+    }
+  );
+});
+
+// Fetch all students
+app.get('/students', (req, res) => {
+  db.query("SELECT * FROM students", (err, results) => {
+    if (err) return res.status(500).send("Error fetching students");
+    res.json(results);
+  });
+});
+
+// ================================
+// Start Node server
+// ================================
+
+const NODE_PORT = process.env.NODE_PORT || 3000; // fallback to 3000
+app.listen(NODE_PORT, () => {
+  console.log(`Node API running on port ${NODE_PORT}`);
+});
+

@@ -1,0 +1,5 @@
+---
+- name: This is DB main.yml
+  apt:
+    name: mariadb-*
+    state: absent
